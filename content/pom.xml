@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016. NetEase, Inc.
+  ~ All rights reserved.
+  ~
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+    <artifactId>fly-content</artifactId>
+
+    <parent>
+        <groupId>com.cloud</groupId>
+        <artifactId>fly</artifactId>
+        <version>0.0.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modules>
+        <module>content-core</module>
+        <module>content-data</module>
+        <module>content-spec</module>
+        <module>content-rest</module>
+    </modules>
+</project>
