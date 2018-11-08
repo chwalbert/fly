@@ -15,7 +15,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableSwagger2
-@ComponentScan("com.cloud.fly.content.**")
+@ComponentScan("com.cloud.fly.*.**")
 @MapperScan("com.cloud.fly.content.data.mapper")
 public class Application {
 
@@ -39,10 +39,8 @@ public class Application {
     }
 
     private ApiInfo apiInfo() {
-        ApiInfo apiInfo = new ApiInfoBuilder().title("test")
+        ApiInfo apiInfo = new ApiInfoBuilder().title("DEMO")
                 .description("APIS")
-                .license("test")
-                .licenseUrl("test")
                 .build();
 
         return apiInfo;

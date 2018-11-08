@@ -104,6 +104,30 @@
             <version>2.5.0</version>
         </dependency>
 
+
+        <!-- WebCollector dependency -->
+        <dependency>
+            <groupId>cn.edu.hfut.dmic.webcollector</groupId>
+            <artifactId>WebCollector</artifactId>
+            <version>2.09</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.8.3</version>
+        </dependency>
     </dependencies>
 
 
@@ -127,14 +151,4 @@
     </build>
 
 
-    <distributionManagement>
-        <repository>
-            <id>artifactory</id>
-            <url>http://mvn.hz.netease.com/artifactory/libs-releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <url>http://mvn.hz.netease.com/artifactory/libs-snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
