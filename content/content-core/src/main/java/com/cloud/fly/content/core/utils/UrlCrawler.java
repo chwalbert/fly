@@ -7,7 +7,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +21,9 @@ public class UrlCrawler {
     public static final String FILE_CRAWLER = "crawlerHtmlCache/";
 
     public static String getHtmlCache(String url) {
+        log.info("getHtmlCache:" + url);
         try {
-            File file = new File(FILE_CRAWLER + HexUtils.toHexString(url.getBytes()) + ".html");
+            File file = new File(FILE_CRAWLER + url.hashCode() + ".html");
             if (!file.exists()) {
                 log.error("get html file non exists . file=" + file.getAbsolutePath());
                 return null;
@@ -39,7 +39,7 @@ public class UrlCrawler {
 
     public static void setHtmlCache(String url, String htmlStr) {
         try {
-            File file = new File(FILE_CRAWLER + HexUtils.toHexString(url.getBytes()) + ".html");
+            File file = new File(FILE_CRAWLER + url.hashCode() + ".html");
             FileUtils.writeStringToFile(file, htmlStr, "UTF-8");
         } catch (Exception exp) {
             log.error("set html cache exp url=" + url + ",htmlStr=" + htmlStr, exp);

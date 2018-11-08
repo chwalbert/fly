@@ -32,11 +32,12 @@ public class Demo {
 
         log.info("getPrice url {} ", url);
 
-        String htmlStr = "";
+        String htmlStr;
         try {
             htmlStr = UrlCrawler.crawlerHtml(url);
         } catch (Exception exp) {
             log.error("crawler Html exp.url=" + url, exp);
+            htmlStr = UrlCrawler.getHtmlCache(url);
         }
 
         if (StringUtils.isEmpty(htmlStr)) {
