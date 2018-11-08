@@ -1,5 +1,6 @@
 package com.cloud.fly.content.core.utils;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,20 +21,18 @@ public class Demo {
 
     private static Logger log = LoggerFactory.getLogger(Demo.class);
 
-    private static final String URL = "https://booking.airasia.com/Flight/Select?o1=%s&d1=%s&culture=zh-CN&dd1=%s&ADT=1&s=true&mon=true&cc=CNY&c=false";
+    private static final String URL_PRICE = "https://booking.airasia.com/Flight/Select?o1=%s&d1=%s&culture=zh-CN&dd1=%s&ADT=1&s=true&mon=true&cc=CNY&c=false";
 
-    public static void main(String[] args) throws Exception {
-        System.out.println(getPrice("PEK", "SIN", "2018-12-12"));
-    }
+    private static final String URL_STATION = "https://sch.apiairasia.com/station/zh-cn/file.json";
 
     public static List<Map<String, String>> getPrice(String from, String to, String data) throws Exception {
         log.info("getPrice  begin {} {} {}", from, to, data);
 
-        String url = String.format(URL, from, to, data);
+        String url = String.format(URL_PRICE, from, to, data);
 
-        log.info("getPrice url {} ", URL);
+        log.info("getPrice url {} ", url);
 
-        String htmlStr = "";
+        String htmlStr;
         try {
             htmlStr = UrlCrawler.crawlerHtml(url);
         } catch (Exception exp) {
@@ -115,5 +115,35 @@ public class Demo {
         map.put("cheap", cheapMap);
         map.put("expensive", expensiveMap);
         return map;
+    }
+
+    public static Object getStation() {
+
+        String htmlStr = UrlCrawler.getHtmlCache(URL_STATION);
+
+
+        if (!StringUtils.isEmpty(htmlStr)) {
+            return JSONUtils.parse(htmlStr);
+        }
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            Object object = restTemplate.getForObject(URL_STATION, Object.class);
+
+            UrlCrawler.setHtmlCache(URL_STATION, JSONUtils.toJSONString(object));
+
+            return object;
+        } catch (Exception exp) {
+            log.error("station Html exp.url=" + URL_STATION, exp);
+        }
+        return null;
+    }
+
+
+    public static void main(String[] args) throws Exception {
+
+//        System.out.println(getPrice("PEK", "SIN", "2018-12-12"));
+//        System.out.println(getStation());
+
+
     }
 }

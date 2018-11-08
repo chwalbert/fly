@@ -23,6 +23,10 @@ public class UrlCrawler {
     public static String getHtmlCache(String url) {
         try {
             File file = new File(FILE_CRAWLER + url.hashCode() + ".html");
+            if (!file.exists()) {
+                log.error("get html file non exists . file=" + file.getAbsolutePath());
+                return null;
+            }
             String fileHtml = FileUtils.readFileToString(file, "UTF-8");
             return fileHtml;
         } catch (Exception exp) {
@@ -46,6 +50,7 @@ public class UrlCrawler {
         HttpClient httpClient = HttpClientBuilder.create().build();
         //使用HttpGet对象绑定url
         HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("accept-language", "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7");
         //访问url获得响应消息封装在HttpResponse对象中
         HttpResponse httpResponse = httpClient.execute(httpGet);
         //entity中是响应消息的实体
@@ -53,6 +58,10 @@ public class UrlCrawler {
         //使用EntityUtils的toString获得url指定页面的字符串内容，即html本身
         String htmlStr = EntityUtils.toString(entity);
 
+        System.out.println(new String(htmlStr.getBytes("GB2312"), "UTf-8"));
+
+
         return htmlStr;
     }
+
 }

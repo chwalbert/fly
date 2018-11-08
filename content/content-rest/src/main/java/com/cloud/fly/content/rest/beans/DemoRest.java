@@ -8,10 +8,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class DemoRest {
 
-    @GetMapping("/demo")
-    public Object home(@RequestParam(defaultValue = "PEK") String from,
-                       @RequestParam(defaultValue = "SIN") String to,
-                       @RequestParam(defaultValue = "2018-12-12") String data) throws Exception {
+    @GetMapping("/demo/price")
+    public Object price(@RequestParam(defaultValue = "PEK") String from,
+                        @RequestParam(defaultValue = "SIN") String to,
+                        @RequestParam(defaultValue = "2018-12-12") String data) throws Exception {
         return Demo.getPrice(from, to, data);
+    }
+
+    @GetMapping("/demo/station")
+    public Object station() throws Exception {
+        return Demo.getStation();
     }
 }
