@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Demo {
 
@@ -62,12 +64,21 @@ public class Demo {
             log.warn(".table.avail-table is null.");
             return null;
         }
-        Elements routeEle = table.getElementsByClass("fare-light-row");
+
+
+        Elements routeEle = table.getElementsByAttributeValueMatching("class", "^fare-[a-z]+-row");
+
+        if (routeEle == null) {
+            log.warn("fare-light-row is null.");
+            return null;
+        }
 
         List<Map<String, String>> list = new ArrayList<>();
         routeEle.forEach(r -> {
-            Map map = getRouteMap(table);
-            list.add(map);
+            Map map = getRouteMap(r);
+            if (map != null) {
+                list.add(map);
+            }
         });
 
         UrlCrawler.setHtmlCache(url, htmlStr);
@@ -78,10 +89,16 @@ public class Demo {
 
     private static Map getRouteMap(Element table) {
         //出发时间
-        Element timeElement = table.select(".avail-table-vert.avail-fare-td.avail-table-top-border-black").first();
-        Elements times = timeElement.getElementsByClass("avail-table-detail");
+        Elements timeMatching = table.getElementsByAttributeValueMatching("class", "^avail-table-vert avail-fare-td avail-table-top-border-[a-z]");
+
+        if (timeMatching == null || timeMatching.size() <= 0) {
+            return null;
+        }
 
         List<String> timeList = new ArrayList<>();
+
+        Element timeElement = timeMatching.first();
+        Elements times = timeElement.getElementsByClass("avail-table-detail");
         times.forEach(t -> {
             Elements allElements = t.getElementsByClass("text-center").first().getAllElements();
             List<Node> nodeList = allElements.first().childNodes();
@@ -96,18 +113,23 @@ public class Demo {
 
         });
 
+
+        Elements cheapMatching = table.getElementsByAttributeValueMatching("class", "^avail-table-top-border-[a-z\\s-]+LF");
         //低航费
-        Element cheapEle = table.select(".avail-table-top-border-black.avail-fare.depart.LF").first();
-        String cheapPrice = cheapEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
+        Element cheapEle = cheapMatching.first();
+
+
+        String cheapPrice = "";
+        if (hasElementsByClass(cheapEle, "avail-fare-price")) {
+            cheapPrice = cheapEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
+        }
 
         String cheapDesc = "";
-        if (cheapEle.getElementsByClass("avail-fare-promo-desc") != null &&
-                cheapEle.getElementsByClass("avail-fare-promo-desc").size() > 0) {
+        if (hasElementsByClass(cheapEle, "avail-fare-promo-desc")) {
             cheapDesc = cheapEle.getElementsByClass("avail-fare-promo-desc").first().childNodes().get(0).toString().trim();
         }
         String cheapRemaining = "";
-        if (cheapEle.getElementsByClass("avail-table-seats-remaining") != null
-                && cheapEle.getElementsByClass("avail-table-seats-remaining").size() > 0) {
+        if (hasElementsByClass(cheapEle, "avail-table-seats-remaining")) {
             cheapRemaining = cheapEle.getElementsByClass("avail-table-seats-remaining").first().childNodes().get(0).toString().trim();
         }
 
@@ -118,18 +140,25 @@ public class Demo {
 
 
         //豪华平躺座椅
-        Element expensiveEle = table.select(".avail-table-top-border-black.avail-fare.depart.BC").first();
-        String expensivePrice = expensiveEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
+        Elements expensiveMatching = table.getElementsByAttributeValueMatching("class", "^avail-table-top-border-[a-z\\s-]+BC");
+
+        Element expensiveEle = expensiveMatching.first();
+
+        String expensivePrice = "";
+        if (hasElementsByClass(expensiveEle, "avail-fare-price")) {
+            expensivePrice = expensiveEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
+        }
 
         String expensiveRemaining = "";
-        if (expensiveEle.getElementsByClass("avail-table-seats-remaining") != null &&
-                expensiveEle.getElementsByClass("avail-table-seats-remaining").size() > 0) {
+        if (hasElementsByClass(expensiveEle, "avail-table-seats-remaining")) {
             expensiveRemaining = expensiveEle.getElementsByClass("avail-table-seats-remaining").first().childNodes().get(0).toString().trim();
         }
+
 
         Map<String, String> expensiveMap = new HashMap<>();
         expensiveMap.put("price", expensivePrice);
         expensiveMap.put("remaining", expensiveRemaining);
+
 
         Map map = new HashMap();
         map.put("time", timeList);
@@ -159,11 +188,32 @@ public class Demo {
         return null;
     }
 
+    private static boolean hasElementsByClass(Element element, String className) {
+        if (element != null &&
+                element.getElementsByClass(className) != null &&
+                element.getElementsByClass(className).size() > 0) {
+            return true;
+        }
+        return false;
+    }
 
     public static void main(String[] args) throws Exception {
 
 //        System.out.println(getPrice("PEK", "SIN", "2018-12-12"));
 //        System.out.println(getStation());
+
+        // 要验证的字符串
+        String str = "avail-table-top-border-gray  avail-fare depart BC";
+        // 邮箱验证规则
+        String regEx = "^avail-table-top-border-[a-z\\s-]+BC";
+        // 编译正则表达式
+        Pattern pattern = Pattern.compile(regEx);
+        // 忽略大小写的写法
+        // Pattern pat = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(str);
+        // 字符串是否与正则表达式相匹配
+        boolean rs = matcher.matches();
+        System.out.println(rs);
 
 
     }
