@@ -7,6 +7,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.apache.tomcat.util.buf.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ public class UrlCrawler {
 
     public static String getHtmlCache(String url) {
         try {
-            File file = new File(FILE_CRAWLER + url.hashCode() + ".html");
+            File file = new File(FILE_CRAWLER + HexUtils.toHexString(url.getBytes()) + ".html");
             if (!file.exists()) {
                 log.error("get html file non exists . file=" + file.getAbsolutePath());
                 return null;
@@ -38,7 +39,7 @@ public class UrlCrawler {
 
     public static void setHtmlCache(String url, String htmlStr) {
         try {
-            File file = new File(FILE_CRAWLER + url.hashCode() + ".html");
+            File file = new File(FILE_CRAWLER + HexUtils.toHexString(url.getBytes()) + ".html");
             FileUtils.writeStringToFile(file, htmlStr, "UTF-8");
         } catch (Exception exp) {
             log.error("set html cache exp url=" + url + ",htmlStr=" + htmlStr, exp);
@@ -50,17 +51,12 @@ public class UrlCrawler {
         HttpClient httpClient = HttpClientBuilder.create().build();
         //使用HttpGet对象绑定url
         HttpGet httpGet = new HttpGet(url);
-        httpGet.setHeader("accept-language", "zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7");
         //访问url获得响应消息封装在HttpResponse对象中
         HttpResponse httpResponse = httpClient.execute(httpGet);
         //entity中是响应消息的实体
         HttpEntity entity = httpResponse.getEntity();
         //使用EntityUtils的toString获得url指定页面的字符串内容，即html本身
         String htmlStr = EntityUtils.toString(entity);
-
-        System.out.println(new String(htmlStr.getBytes("GB2312"), "UTf-8"));
-
-
         return htmlStr;
     }
 

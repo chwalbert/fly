@@ -32,12 +32,11 @@ public class Demo {
 
         log.info("getPrice url {} ", url);
 
-        String htmlStr;
+        String htmlStr = "";
         try {
             htmlStr = UrlCrawler.crawlerHtml(url);
         } catch (Exception exp) {
             log.error("crawler Html exp.url=" + url, exp);
-            htmlStr = UrlCrawler.getHtmlCache(url);
         }
 
         if (StringUtils.isEmpty(htmlStr)) {
@@ -58,6 +57,10 @@ public class Demo {
 
         // 获取 票价table
         Element table = doc.select(".table.avail-table").first();
+        if (table == null) {
+            log.warn(".table.avail-table is null.");
+            return null;
+        }
         Elements routeEle = table.getElementsByClass("fare-light-row");
 
         List<Map<String, String>> list = new ArrayList<>();
@@ -94,21 +97,38 @@ public class Demo {
 
         //低航费
         Element cheapEle = table.select(".avail-table-top-border-black.avail-fare.depart.LF").first();
-        String cheap = cheapEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
-        String cheapDesc = cheapEle.getElementsByClass("avail-fare-promo-desc").first().childNodes().get(0).toString().trim();
+        String cheapPrice = cheapEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
+
+        String cheapDesc = "";
+        if (cheapEle.getElementsByClass("avail-fare-promo-desc") != null &&
+                cheapEle.getElementsByClass("avail-fare-promo-desc").size() > 0) {
+            cheapDesc = cheapEle.getElementsByClass("avail-fare-promo-desc").first().childNodes().get(0).toString().trim();
+        }
+        String cheapRemaining = "";
+        if (cheapEle.getElementsByClass("avail-table-seats-remaining") != null
+                && cheapEle.getElementsByClass("avail-table-seats-remaining").size() > 0) {
+            cheapRemaining = cheapEle.getElementsByClass("avail-table-seats-remaining").first().childNodes().get(0).toString().trim();
+        }
 
         Map<String, String> cheapMap = new HashMap<>();
-        cheapMap.put("price", cheap);
+        cheapMap.put("price", cheapPrice);
+        cheapMap.put("remaining", cheapRemaining);
         cheapMap.put("desc", cheapDesc);
+
 
         //豪华平躺座椅
         Element expensiveEle = table.select(".avail-table-top-border-black.avail-fare.depart.BC").first();
-        String expensive = expensiveEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
-        String expensiveDesc = expensiveEle.getElementsByClass("avail-table-seats-remaining").first().childNodes().get(0).toString().trim();
+        String expensivePrice = expensiveEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
+
+        String expensiveRemaining = "";
+        if (expensiveEle.getElementsByClass("avail-table-seats-remaining") != null &&
+                expensiveEle.getElementsByClass("avail-table-seats-remaining").size() > 0) {
+            expensiveRemaining = expensiveEle.getElementsByClass("avail-table-seats-remaining").first().childNodes().get(0).toString().trim();
+        }
 
         Map<String, String> expensiveMap = new HashMap<>();
-        expensiveMap.put("price", expensive);
-        expensiveMap.put("desc", expensiveDesc);
+        expensiveMap.put("price", expensivePrice);
+        expensiveMap.put("remaining", expensiveRemaining);
 
         Map map = new HashMap();
         map.put("time", timeList);
