@@ -2,6 +2,9 @@ server:
   port: 8080
 
 spring:
+    jackson:
+       # remove null objects in json response
+       serialization-inclusion: NON_NULL
     datasource:
         name: mysql_test
         type: com.alibaba.druid.pool.DruidDataSource
@@ -11,9 +14,9 @@ spring:
           filters: stat
           driver-class-name: com.mysql.jdbc.Driver
           #\u57FA\u672C\u5C5E\u6027
-          url: jdbc:mysql://10.240.192.254:3307/test?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+          url: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
           username: root
-          password:
+          password: Albert24
           #\u914D\u7F6E\u521D\u59CB\u5316\u5927\u5C0F/\u6700\u5C0F/\u6700\u5927
           initial-size: 1
           min-idle: 1

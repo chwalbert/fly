@@ -1,45 +1,63 @@
 package com.cloud.fly.content.core.model;
 
-public class FlightCollectorContext {
+import com.cloud.fly.content.core.constant.AirType;
+
+public class AirContext {
+
+    private AirType type;
     /**
      * 出发地
      */
-    private String departure;
+    private String depCode;
     /**
      * 目的地
      */
-    private String arrival;
+    private String arrCode;
     /**
      * 出发日期
      */
-    private String departureDate;
+    private String depDate;
     /**
      * 回程日期
      */
     private String returnDate;
 
-    public String getDeparture() {
-        return departure;
+    private AirResponse response;
+
+    public AirContext() {
+        this.response = new AirResponse();
     }
 
-    public void setDeparture(String departure) {
-        this.departure = departure;
+    public AirType getType() {
+        return type;
     }
 
-    public String getArrival() {
-        return arrival;
+    public void setType(AirType type) {
+        this.type = type;
     }
 
-    public void setArrival(String arrival) {
-        this.arrival = arrival;
+    public String getDepCode() {
+        return depCode;
     }
 
-    public String getDepartureDate() {
-        return departureDate;
+    public void setDepCode(String depCode) {
+        this.depCode = depCode;
     }
 
-    public void setDepartureDate(String departureDate) {
-        this.departureDate = departureDate;
+    public String getArrCode() {
+        return arrCode;
+    }
+
+    public void setArrCode(String arrCode) {
+        this.arrCode = arrCode;
+    }
+
+    public String getDepDate() {
+        return depDate;
+    }
+
+    public void setDepDate(String depDate) {
+        this.depDate = depDate;
     }
 
     public String getReturnDate() {
@@ -48,5 +66,13 @@ public class FlightCollectorContext {
 
     public void setReturnDate(String returnDate) {
         this.returnDate = returnDate;
+    }
+
+    public AirResponse getResponse() {
+        return response;
+    }
+
+    public void setResponse(AirResponse response) {
+        this.response = response;
     }
 }

@@ -1,35 +1,35 @@
 package com.cloud.fly.content.core.model;
 
-public class FlightBusanFare extends FlightRouteBase {
+public class FlightBusan extends FlightRouteBase {
 
     /**
      * 釜山价格
      */
-    private String superSpecialFare;
-    private String specialFare;
-    private String regularFare;
+    private FlightRouteFare superSpecialFare;
+    private FlightRouteFare specialFare;
+    private FlightRouteFare regularFare;
 
-    public String getSuperSpecialFare() {
+    public FlightRouteFare getSuperSpecialFare() {
         return superSpecialFare;
     }
 
-    public void setSuperSpecialFare(String superSpecialFare) {
+    public void setSuperSpecialFare(FlightRouteFare superSpecialFare) {
         this.superSpecialFare = superSpecialFare;
     }
 
-    public String getSpecialFare() {
+    public FlightRouteFare getSpecialFare() {
         return specialFare;
     }
 
-    public void setSpecialFare(String specialFare) {
+    public void setSpecialFare(FlightRouteFare specialFare) {
         this.specialFare = specialFare;
     }
 
-    public String getRegularFare() {
+    public FlightRouteFare getRegularFare() {
         return regularFare;
     }
 
-    public void setRegularFare(String regularFare) {
+    public void setRegularFare(FlightRouteFare regularFare) {
         this.regularFare = regularFare;
     }
 }

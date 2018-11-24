@@ -4,7 +4,9 @@ package com.cloud.fly.content.core.beans;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.cloud.fly.content.core.model.FlightRoute;
+import com.cloud.fly.content.core.model.FlightAsia;
+import com.cloud.fly.content.core.model.FlightRouteBase;
+import com.cloud.fly.content.core.model.FlightRouteFare;
 import com.cloud.fly.content.core.model.Station;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,21 +30,21 @@ import java.util.Map;
  * @Description: 亚航
  */
 @Service
-public class AsiaServiceImpl implements AirResolverService {
+public class AsiaResolverServiceImpl implements AirResolverService {
 
-    private static Logger log = LoggerFactory.getLogger(AsiaServiceImpl.class);
+    private static Logger log = LoggerFactory.getLogger(AsiaResolverServiceImpl.class);
 
     @Override
     public List<Station> parseStation(String htmlStr) {
         List<Station> list = new ArrayList<>();
         JSONArray jsonArray = JSON.parseArray(htmlStr);
-        Station station = new Station();
         for (Object obj : jsonArray) {
+            Station station = new Station();
             JSONObject jsonObject = (JSONObject) obj;
             station.setCountryName(jsonObject.getString("CountryName"));
             station.setCountryCode(jsonObject.getString("CountryCode"));
             station.setStationName(jsonObject.getString("StationName"));
-            station.setStationCode(jsonObject.getString("CountryCode"));
+            station.setStationCode(jsonObject.getString("StationCode"));
             station.setAirportName(jsonObject.getString("AirportName"));
             station.setLatitude(jsonObject.getString("Lat"));
             station.setLongitude(jsonObject.getString("Long"));
@@ -54,7 +56,7 @@ public class AsiaServiceImpl implements AirResolverService {
     }
 
     @Override
-    public List<FlightRoute> parseFlight(String htmlStr) {
+    public List<FlightRouteBase> parseFlight(String htmlStr) {
         log.info("-------parseFlight entry-------");
 
         if (StringUtils.isEmpty(htmlStr)) {
@@ -88,9 +90,9 @@ public class AsiaServiceImpl implements AirResolverService {
             return null;
         }
 
-        List<FlightRoute> list = new ArrayList<>();
+        List<FlightRouteBase> list = new ArrayList<>();
         routeEle.forEach(r -> {
-            FlightRoute map = getRoute(r);
+            FlightAsia map = getRoute(r);
             if (map != null) {
                 list.add(map);
             }
@@ -99,7 +101,7 @@ public class AsiaServiceImpl implements AirResolverService {
         return list;
     }
 
-    private FlightRoute getRoute(Element table) {
+    private FlightAsia getRoute(Element table) {
         //出发时间
         Elements timeMatching = table.getElementsByAttributeValueMatching("class", "^avail-table-vert avail-fare-td avail-table-top-border-[a-z]");
 
@@ -172,7 +174,7 @@ public class AsiaServiceImpl implements AirResolverService {
         expensiveMap.put("remaining", expensiveRemaining);
 
 
-        FlightRoute route = new FlightRoute();
+        FlightAsia route = new FlightAsia();
         Map map = new HashMap();
         map.put("time", timeList);
         map.put("cheap", cheapMap);
@@ -180,8 +182,15 @@ public class AsiaServiceImpl implements AirResolverService {
 
         route.setDepTime(CollectionUtils.isEmpty(timeList) ? "" : timeList.get(0));
         route.setArrTime(CollectionUtils.isEmpty(timeList) ? "" : timeList.get(timeList.size() - 1));
-        route.setLowFare(cheapPrice);
-        route.setPremiumFlatbed(expensivePrice);
+
+        FlightRouteFare flightRouteFare = new FlightRouteFare();
+        flightRouteFare.setFare(cheapPrice);
+        route.setLowFare(flightRouteFare);
+
+
+        FlightRouteFare premiumFlatbed = new FlightRouteFare();
+        premiumFlatbed.setFare(expensivePrice);
+        route.setPremiumFlatbed(premiumFlatbed);
         return route;
     }
 

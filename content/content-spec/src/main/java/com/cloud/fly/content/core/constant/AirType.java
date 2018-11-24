@@ -5,7 +5,7 @@ package com.cloud.fly.content.core.constant;
  * @Date: 2018/11/18 17:24
  * @Description:
  */
-public enum StationType {
+public enum AirType {
     asia,//亚航
     busan//釜山
 }

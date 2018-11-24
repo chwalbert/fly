@@ -1,33 +1,22 @@
 package com.cloud.fly.content.core.model;
 
-public class FlightRouteBase {
-    private String flightNo;
-    private String depTime;
-    private String arrTime;
+public class FlightRouteFare {
+    private String fare;
+    private String benefits;
 
-    public String getFlightNo() {
-        return flightNo;
+    public String getFare() {
+        return fare;
     }
 
-    public void setFlightNo(String flightNo) {
-        this.flightNo = flightNo;
+    public void setFare(String fare) {
+        this.fare = fare;
     }
 
-    public String getDepTime() {
-        return depTime;
+    public String getBenefits() {
+        return benefits;
     }
 
-    public void setDepTime(String depTime) {
-        this.depTime = depTime;
+    public void setBenefits(String benefits) {
+        this.benefits = benefits;
     }
-
-    public String getArrTime() {
-        return arrTime;
-    }
-
-    public void setArrTime(String arrTime) {
-        this.arrTime = arrTime;
-    }
-
-
 }

@@ -4,11 +4,9 @@ import com.alibaba.druid.support.json.JSONUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -88,82 +86,82 @@ public class Demo {
     }
 
     private static Map getRouteMap(Element table) {
-        //出发时间
-        Elements timeMatching = table.getElementsByAttributeValueMatching("class", "^avail-table-vert avail-fare-td avail-table-top-border-[a-z]");
-
-        if (timeMatching == null || timeMatching.size() <= 0) {
-            return null;
-        }
-
-        List<String> timeList = new ArrayList<>();
-
-        Element timeElement = timeMatching.first();
-        Elements times = timeElement.getElementsByClass("avail-table-detail");
-        times.forEach(t -> {
-            Elements allElements = t.getElementsByClass("text-center").first().getAllElements();
-            List<Node> nodeList = allElements.first().childNodes();
-            StringBuilder timeStr = new StringBuilder();
-            nodeList.stream()
-                    .filter(node -> !CollectionUtils.isEmpty(node.childNodes()))
-                    .forEach(node -> {
-                        String time = node.childNodes().get(0).toString().trim();
-                        timeStr.append(time);
-                    });
-            timeList.add(timeStr.toString());
-
-        });
-
-
-        Elements cheapMatching = table.getElementsByAttributeValueMatching("class", "^avail-table-top-border-[a-z\\s-]+LF");
-        //低航费
-        Element cheapEle = cheapMatching.first();
-
-
-        String cheapPrice = "";
-        if (hasElementsByClass(cheapEle, "avail-fare-price")) {
-            cheapPrice = cheapEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
-        }
-
-        String cheapDesc = "";
-        if (hasElementsByClass(cheapEle, "avail-fare-promo-desc")) {
-            cheapDesc = cheapEle.getElementsByClass("avail-fare-promo-desc").first().childNodes().get(0).toString().trim();
-        }
-        String cheapRemaining = "";
-        if (hasElementsByClass(cheapEle, "avail-table-seats-remaining")) {
-            cheapRemaining = cheapEle.getElementsByClass("avail-table-seats-remaining").first().childNodes().get(0).toString().trim();
-        }
-
-        Map<String, String> cheapMap = new HashMap<>();
-        cheapMap.put("price", cheapPrice);
-        cheapMap.put("remaining", cheapRemaining);
-        cheapMap.put("desc", cheapDesc);
-
-
-        //豪华平躺座椅
-        Elements expensiveMatching = table.getElementsByAttributeValueMatching("class", "^avail-table-top-border-[a-z\\s-]+BC");
-
-        Element expensiveEle = expensiveMatching.first();
-
-        String expensivePrice = "";
-        if (hasElementsByClass(expensiveEle, "avail-fare-price")) {
-            expensivePrice = expensiveEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
-        }
-
-        String expensiveRemaining = "";
-        if (hasElementsByClass(expensiveEle, "avail-table-seats-remaining")) {
-            expensiveRemaining = expensiveEle.getElementsByClass("avail-table-seats-remaining").first().childNodes().get(0).toString().trim();
-        }
-
-
-        Map<String, String> expensiveMap = new HashMap<>();
-        expensiveMap.put("price", expensivePrice);
-        expensiveMap.put("remaining", expensiveRemaining);
+//        //出发时间
+//        Elements timeMatching = table.getElementsByAttributeValueMatching("class", "^avail-table-vert avail-fare-td avail-table-top-border-[a-z]");
+//
+//        if (timeMatching == null || timeMatching.size() <= 0) {
+//            return null;
+//        }
+//
+//        List<String> timeList = new ArrayList<>();
+//
+//        Element timeElement = timeMatching.first();
+//        Elements times = timeElement.getElementsByClass("avail-table-detail");
+//        times.forEach(t -> {
+//            Elements allElements = t.getElementsByClass("text-center").first().getAllElements();
+//            List<Node> nodeList = allElements.first().childNodes();
+//            StringBuilder timeStr = new StringBuilder();
+//            nodeList.stream()
+//                    .filter(node -> !CollectionUtils.isEmpty(node.childNodes()))
+//                    .forEach(node -> {
+//                        String time = node.childNodes().get(0).toString().trim();
+//                        timeStr.append(time);
+//                    });
+//            timeList.add(timeStr.toString());
+//
+//        });
+//
+//
+//        Elements cheapMatching = table.getElementsByAttributeValueMatching("class", "^avail-table-top-border-[a-z\\s-]+LF");
+//        //低航费
+//        Element cheapEle = cheapMatching.first();
+//
+//
+//        String cheapPrice = "";
+//        if (hasElementsByClass(cheapEle, "avail-fare-price")) {
+//            cheapPrice = cheapEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
+//        }
+//
+//        String cheapDesc = "";
+//        if (hasElementsByClass(cheapEle, "avail-fare-promo-desc")) {
+//            cheapDesc = cheapEle.getElementsByClass("avail-fare-promo-desc").first().childNodes().get(0).toString().trim();
+//        }
+//        String cheapRemaining = "";
+//        if (hasElementsByClass(cheapEle, "avail-table-seats-remaining")) {
+//            cheapRemaining = cheapEle.getElementsByClass("avail-table-seats-remaining").first().childNodes().get(0).toString().trim();
+//        }
+//
+//        Map<String, String> cheapMap = new HashMap<>();
+//        cheapMap.put("price", cheapPrice);
+//        cheapMap.put("remaining", cheapRemaining);
+//        cheapMap.put("desc", cheapDesc);
+//
+//
+//        //豪华平躺座椅
+//        Elements expensiveMatching = table.getElementsByAttributeValueMatching("class", "^avail-table-top-border-[a-z\\s-]+BC");
+//
+//        Element expensiveEle = expensiveMatching.first();
+//
+//        String expensivePrice = "";
+//        if (hasElementsByClass(expensiveEle, "avail-fare-price")) {
+//            expensivePrice = expensiveEle.getElementsByClass("avail-fare-price").first().childNodes().get(0).toString().trim();
+//        }
+//
+//        String expensiveRemaining = "";
+//        if (hasElementsByClass(expensiveEle, "avail-table-seats-remaining")) {
+//            expensiveRemaining = expensiveEle.getElementsByClass("avail-table-seats-remaining").first().childNodes().get(0).toString().trim();
+//        }
+//
+//
+//        Map<String, String> expensiveMap = new HashMap<>();
+//        expensiveMap.put("price", expensivePrice);
+//        expensiveMap.put("remaining", expensiveRemaining);
 
 
         Map map = new HashMap();
-        map.put("time", timeList);
-        map.put("cheap", cheapMap);
-        map.put("expensive", expensiveMap);
+//        map.put("time", timeList);
+//        map.put("cheap", cheapMap);
+//        map.put("expensive", expensiveMap);
         return map;
     }
 

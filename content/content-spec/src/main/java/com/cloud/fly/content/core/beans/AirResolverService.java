@@ -1,6 +1,6 @@
 package com.cloud.fly.content.core.beans;
 
-import com.cloud.fly.content.core.model.FlightRoute;
+import com.cloud.fly.content.core.model.FlightRouteBase;
 import com.cloud.fly.content.core.model.Station;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  * @Date: 2018/11/18 17:24
  * @Description: 航司解析
  */
-public interface AirService {
+public interface AirResolverService {
 
 
     /**
@@ -25,6 +25,6 @@ public interface AirService {
      *
      * @param htmlStr
      */
-    List<FlightRoute> parseFlight(String htmlStr);
+    List<FlightRouteBase> parseFlight(String htmlStr);
 
 }
