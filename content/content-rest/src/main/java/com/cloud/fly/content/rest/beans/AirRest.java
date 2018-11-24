@@ -1,7 +1,7 @@
 package com.cloud.fly.content.rest.beans;
 
-import com.cloud.fly.content.core.beans.TestService;
-import com.cloud.fly.content.core.model.Test;
+import com.cloud.fly.content.core.beans.AirResolverService;
+import com.cloud.fly.content.core.model.Station;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,12 +13,12 @@ public class TestRest {
 
 
     @Autowired
-    private TestService testService;
+    private AirResolverService testService;
 
     @ResponseBody
     @PostMapping("/test/add")
     public Object addUser(@RequestParam String name) {
-        Test testBO = new Test();
+        Station testBO = new Station();
         testBO.setName(name);
         return testService.add(testBO);
     }
