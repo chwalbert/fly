@@ -4,22 +4,24 @@ import java.io.Serializable;
 import java.util.List;
 
 public class AirResponse implements Serializable {
-    private List<FlightRouteBase> asiaFlightRoutes;
-    private List<FlightRouteBase> busanFlightRoutes;
+    private List<AirInfo> fromSegments;
 
-    public List<FlightRouteBase> getAsiaFlightRoutes() {
-        return asiaFlightRoutes;
+    private List<AirInfo> retSegments;
+
+
+    public List<AirInfo> getFromSegments() {
+        return fromSegments;
     }
 
-    public void setAsiaFlightRoutes(List<FlightRouteBase> asiaFlightRoutes) {
-        this.asiaFlightRoutes = asiaFlightRoutes;
+    public void setFromSegments(List<AirInfo> fromSegments) {
+        this.fromSegments = fromSegments;
     }
 
-    public List<FlightRouteBase> getBusanFlightRoutes() {
-        return busanFlightRoutes;
+    public List<AirInfo> getRetSegments() {
+        return retSegments;
     }
 
-    public void setBusanFlightRoutes(List<FlightRouteBase> busanFlightRoutes) {
-        this.busanFlightRoutes = busanFlightRoutes;
+    public void setRetSegments(List<AirInfo> retSegments) {
+        this.retSegments = retSegments;
     }
 }

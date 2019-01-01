@@ -1,10 +1,8 @@
 package com.cloud.fly.content.core.model;
 
-import com.cloud.fly.content.core.constant.AirType;
-
 public class AirContext {
 
-    private AirType type;
+    private String tripType;
     /**
      * 出发地
      */
@@ -22,18 +20,13 @@ public class AirContext {
      */
     private String returnDate;
 
-    private AirResponse response;
 
-    public AirContext() {
-        this.response = new AirResponse();
+    public String getTripType() {
+        return tripType;
     }
 
-    public AirType getType() {
-        return type;
-    }
-
-    public void setType(AirType type) {
-        this.type = type;
+    public void setTripType(String tripType) {
+        this.tripType = tripType;
     }
 
     public String getDepCode() {
@@ -66,13 +59,5 @@ public class AirContext {
 
     public void setReturnDate(String returnDate) {
         this.returnDate = returnDate;
-    }
-
-    public AirResponse getResponse() {
-        return response;
-    }
-
-    public void setResponse(AirResponse response) {
-        this.response = response;
     }
 }
