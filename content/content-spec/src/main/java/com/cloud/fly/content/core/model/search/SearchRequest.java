@@ -8,7 +8,7 @@ import java.util.List;
  * @Date: 2018/12/19 22:50
  * @Description:
  */
-public class Search implements Serializable {
+public class SearchRequest implements Serializable {
     /**
      * 接口身份标识用户名(渠道唯一标识)
      */

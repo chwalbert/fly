@@ -7,7 +7,7 @@ import com.cloud.fly.content.core.model.search.RoutingElement;
  * @Date: 2018/12/20 23:21
  * @Description:
  */
-public class Verify {
+public class VerifyRequest {
 
     /**
      * 接口身份标识用户名(渠道唯一标识)

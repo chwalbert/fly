@@ -2,8 +2,8 @@ package com.cloud.fly.content.core.beans;
 
 
 import com.cloud.fly.content.core.model.AirContext;
+import com.cloud.fly.content.core.model.AirFlight;
 import com.cloud.fly.content.core.model.AirInfo;
-import com.cloud.fly.content.core.model.AirResponse;
 import com.cloud.fly.content.core.model.FlightPrice;
 import com.cloud.fly.content.core.model.FlightSegment;
 import com.cloud.fly.content.core.utils.UrlCrawler;
@@ -63,7 +63,7 @@ public class AsiaServiceImpl implements AirService {
     }
 
     @Override
-    public AirResponse parseFlight(String htmlStr) {
+    public AirInfo parseFlight(String htmlStr) {
         log.info("-------parseFlight entry-------");
 
         Elements elements = checkeElements(htmlStr);
@@ -72,7 +72,7 @@ public class AsiaServiceImpl implements AirService {
             return null;
         }
 
-        AirResponse response = new AirResponse();
+        AirInfo response = new AirInfo();
 
         for (Element e : elements) {
 
@@ -99,9 +99,9 @@ public class AsiaServiceImpl implements AirService {
                 log.warn("fare-light-row is null.");
                 continue;
             }
-            List<AirInfo> infos = new ArrayList<>();
+            List<AirFlight> infos = new ArrayList<>();
             for (Element r : routeEle) {
-                AirInfo info = getRoute(r);
+                AirFlight info = getRoute(r);
                 if (info == null) {
                     continue;
                 }
@@ -148,14 +148,14 @@ public class AsiaServiceImpl implements AirService {
         return elements;
     }
 
-    private AirInfo getRoute(Element table) {
+    private AirFlight getRoute(Element table) {
 
         /**
          *
          * 航段
          */
 
-        if (hasElementsByClass(table, "avail-table-info")) {
+        if (!hasElementsByClass(table, "avail-table-info")) {
             log.warn("getRoute avail-table-info is null.");
             return null;
         }
@@ -235,15 +235,15 @@ public class AsiaServiceImpl implements AirService {
         /**
          * 豪华平躺座椅
          */
-        FlightPrice premiumPrice = getPrice(table, "^avail-table-top-border-[a-z\\\\s-]+BC");
+        FlightPrice premiumPrice = getPrice(table, "^avail-table-top-border-[a-z\\s-]+BC");
 
 
-        AirInfo info1 = new AirInfo();
+        AirFlight info1 = new AirFlight();
         info1.setSegments(segments);
         info1.setLow(lowPrice);
         info1.setPremium(premiumPrice);
 
-        return null;
+        return info1;
     }
 
     private FlightPrice getPrice(Element table, String low_class) {
@@ -272,8 +272,8 @@ public class AsiaServiceImpl implements AirService {
             }
 
             //剩余座位
-            if (hasElementsByClass(lowEle, "avail-fare-pax-type-container")) {
-                String seatsStr = lowEle.getElementsByClass("avail-fare-pax-type-container").first().childNodes().get(0).toString().trim();
+            if (hasElementsByClass(lowEle, "avail-table-seats-remaining")) {
+                String seatsStr = lowEle.getElementsByClass("avail-table-seats-remaining").first().childNodes().get(0).toString().trim();
                 if (StringUtils.hasText(seatsStr)) {
                     seatsStr = Pattern.compile("[^0-9]").matcher(seatsStr).replaceAll("");
                     low_seats = org.apache.commons.lang3.math.NumberUtils.toInt(seatsStr, 9);

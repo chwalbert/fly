@@ -9,7 +9,7 @@ import java.util.List;
  * @Date: 2018/12/20 23:58
  * @Description:
  */
-public class Order {
+public class OrderRequest {
 
     /**
      * 接口身份标识用户名(渠道唯一标识)

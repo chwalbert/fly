@@ -1,7 +1,7 @@
 package com.cloud.fly.content.core.beans;
 
 import com.cloud.fly.content.core.model.AirContext;
-import com.cloud.fly.content.core.model.AirResponse;
+import com.cloud.fly.content.core.model.AirInfo;
 
 /**
  * @Auther: chw
@@ -22,7 +22,7 @@ public interface AirService {
      *
      * @param htmlStr
      */
-    AirResponse parseFlight(String htmlStr);
+    AirInfo parseFlight(String htmlStr);
 
 
 

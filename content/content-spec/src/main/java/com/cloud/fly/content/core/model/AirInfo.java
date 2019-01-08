@@ -4,33 +4,24 @@ import java.io.Serializable;
 import java.util.List;
 
 public class AirInfo implements Serializable {
-    private List<FlightSegment> segments;
+    private List<AirFlight> fromSegments;
 
-    private FlightPrice low;
+    private List<AirFlight> retSegments;
 
-    private FlightPrice premium;
 
-    public List<FlightSegment> getSegments() {
-        return segments;
+    public List<AirFlight> getFromSegments() {
+        return fromSegments;
     }
 
-    public void setSegments(List<FlightSegment> segments) {
-        this.segments = segments;
+    public void setFromSegments(List<AirFlight> fromSegments) {
+        this.fromSegments = fromSegments;
     }
 
-    public FlightPrice getLow() {
-        return low;
+    public List<AirFlight> getRetSegments() {
+        return retSegments;
     }
 
-    public void setLow(FlightPrice low) {
-        this.low = low;
-    }
-
-    public FlightPrice getPremium() {
-        return premium;
-    }
-
-    public void setPremium(FlightPrice premium) {
-        this.premium = premium;
+    public void setRetSegments(List<AirFlight> retSegments) {
+        this.retSegments = retSegments;
     }
 }

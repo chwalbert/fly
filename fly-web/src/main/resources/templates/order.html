@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ORDER</title>
+
+    <style type="text/css">
+
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+
+</head>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.js">
+</script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js">
+</script>
+
+
+<body>
+
+<table id="example" class="display cell-border" style="width:100%">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>行程类型</th>
+        <th>出发地城市</th>
+        <th>目的地城市</th>
+        <th>去程日期</th>
+        <th>回程日期</th>
+        <th>成⼈人数</th>
+        <th>⼉童人数</th>
+
+
+    </tr>
+    </thead>
+    <!--<tfoot>-->
+    <!--<tr>-->
+    <!--<th>id</th>-->
+    <!--<th>sessionId</th>-->
+    <!--<th>orderInfo</th>-->
+    <!--<th>orderStatus</th>-->
+    <!--<th>routing</th>-->
+    <!--<th>createTime</th>-->
+    <!--<th>updateTime</th>-->
+    <!--</tr>-->
+    <!--</tfoot>-->
+</table>
+
+</body>
+</html>
+
+<script>
+
+
+    $(document).ready(function () {
+        var table = $('#example').DataTable({
+            "paging": false,
+            "ordering": false,
+            "info": false,
+            "searching": false,
+            "ajax": "/admin/order/all",
+            "columns": [
+                {"data": "id"},
+                {"data": "sessionId"},
+                {"data": "orderInfo"},
+                {"data": "orderStatus"},
+                {"data": "routing"},
+                {"data": "createTime"},
+                {"data": "updateTime"}
+            ]
+        });
+
+        $('#example tbody').on('click', 'tr', function () {
+            var data = table.row(this).data();
+            alert('You clicked on ' + data + '\'s row');
+            window.open("detail/" + data[1], "_blank", "scrollbars=yes,resizable=1,modal=false,alwaysRaised=yes");
+        });
+
+    });
+</script>

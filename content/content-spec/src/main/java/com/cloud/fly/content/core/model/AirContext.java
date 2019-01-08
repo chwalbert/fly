@@ -1,5 +1,7 @@
 package com.cloud.fly.content.core.model;
 
+import java.util.List;
+
 public class AirContext {
 
     private String tripType;
@@ -19,6 +21,32 @@ public class AirContext {
      * 回程日期
      */
     private String returnDate;
+
+
+    /**
+     * 返回结果
+     */
+
+    private List<AirFlight> fromSegments;
+
+    private List<AirFlight> retSegments;
+
+
+    public List<AirFlight> getFromSegments() {
+        return fromSegments;
+    }
+
+    public void setFromSegments(List<AirFlight> fromSegments) {
+        this.fromSegments = fromSegments;
+    }
+
+    public List<AirFlight> getRetSegments() {
+        return retSegments;
+    }
+
+    public void setRetSegments(List<AirFlight> retSegments) {
+        this.retSegments = retSegments;
+    }
 
 
     public String getTripType() {

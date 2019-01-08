@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>详情页</title>
+    <!-- 此文件为了显示Demo样式，项目中不需要引入 -->
+
+    <link href="http://g.alicdn.com/bui/bui/1.1.21/css/bs3/dpl.css" rel="stylesheet">
+    <link href="http://g.alicdn.com/bui/bui/1.1.21/css/bs3/bui.css" rel="stylesheet">
+
+</head>
+<body>
+<div class="demo-content">
+    <!--- button区域 -->
+    <div class="detail-row">
+        <div class="detail-actions">
+
+             <span class="detail-text" th:switch="${obj.orderEntity.status.name()}">
+                  <span th:case="'pending'">
+                      <a class="button button-primary" href="javascript:void(0)" id="audit1">出单</a>
+                   </span>
+                 <span th:case="'processing'">
+                     <a class="button button-primary" href="javascript:void(0)" id="audit2">出单成功</a>
+                     <a class="button button-primary" href="javascript:void(0)" id="audit3">出单失败</a>
+                 </span>
+             </span>
+        </div>
+    </div>
+
+    <!-- 详情页 ================================================== -->
+    <div class="row">
+        <div class="span24">
+            <!-- 包含grid的详情页 ================================================== -->
+            <h2>订单详情</h2>
+
+            <h3>订单状态</h3>
+            <div class="row detail-row">
+                <div class="span8">
+                    <label>订单状态：</label>
+                    <span class="detail-text" th:switch="${obj.orderEntity.status}">
+                            <span th:case="'pending'">待出单</span>
+                            <span th:case="'processing'">出单中</span>
+                            <span th:case="'done'">出单成功</span>
+                            <span th:case="'failed'">出单失败</span>
+                        </span>
+                </div>
+            </div>
+            <hr>
+            <form name="" action="" method="post" id="detailForm">
+                <h3>航班信息</h3>
+                <div class="row detail-row">
+                    <div class="span8">
+                        <label>行程类型：</label>
+                        <span class="detail-text" th:switch="${obj.order.tripType}">
+                            <span th:case="'1'">单程</span>
+                            <span th:case="'2'">往返</span>
+                        </span>
+                    </div>
+                </div>
+
+                <h3>去程航段</h3>
+                <div th:each="fromSegment  : ${obj.order.routing.fromSegments}">
+
+                    <div class="row detail-row">
+                        <div class="span8">
+                            <label>航司：</label><span class="detail-text" th:text="${fromSegment.carrier}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label>出发机场：</label><span class="detail-text" th:text="${fromSegment.depAirport}"></span>
+                        </div>
+                        <div class="span8">
+                            <label>起飞日期时间：</label><span class="detail-text" th:text="${fromSegment.depTime}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 到达机场：</label><span class="detail-text" th:text="${fromSegment.arrAirport}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 到达日期时间：</label><span class="detail-text" th:text="${fromSegment.arrTime}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 航班号：</label><span class="detail-text" th:text="${fromSegment.flightNumber}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 舱等：</label><span class="detail-text" th:text="${fromSegment.cabinGrade}"></span>
+                        </div>
+                        <div class="span8">
+                            <label> 飞行时长：</label><span class="detail-text" th:text="${fromSegment.duration}"></span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <h3>回程航段</h3>
+                <div th:each="retSegment   : ${obj.order.routing.retSegments}">
+
+                    <div class="row detail-row">
+                        <div class="span8">
+                            <label>航司：</label><span class="detail-text" th:text="${retSegment.carrier}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label>出发机场：</label><span class="detail-text" th:text="${retSegment.depAirport}"></span>
+                        </div>
+                        <div class="span8">
+                            <label>起飞日期时间：</label><span class="detail-text" th:text="${retSegment.depTime}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 到达机场：</label><span class="detail-text" th:text="${retSegment.arrAirport}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 到达日期时间：</label><span class="detail-text" th:text="${retSegment.arrTime}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 航班号：</label><span class="detail-text" th:text="${retSegment.flightNumber}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 舱等：</label><span class="detail-text" th:text="${retSegment.cabinGrade}"></span>
+                        </div>
+                        <div class="span8">
+                            <label> 飞行时长：</label><span class="detail-text" th:text="${retSegment.duration}"></span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <h3>乘机人信息</h3>
+                <div th:each="passenger    : ${obj.order.passengers}">
+
+                    <div class="row detail-row">
+                        <div class="span8">
+                            <label>同程乘机人 ID：</label><span class="detail-text" th:text="${passenger.passengerID}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> LastName 姓：</label><span class="detail-text" th:text="${passenger.lastName}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> FirstName 名：</label><span class="detail-text"
+                                                              th:text="${passenger.firstName}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 乘客类型：</label>
+                            <span class="detail-text" th:switch="${passenger.ageType}">
+                            <span th:case="'0'">成人</span>
+                            <span th:case="'1'">儿童</span>
+                            <span th:case="'-1'">留学生</span>
+
+                        </span>
+
+                        </div>
+
+                        <div class="span8">
+                            <label> 生日：</label><span class="detail-text" th:text="${passenger.birthday}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 乘客性别：</label>
+
+                            <span class="detail-text" th:switch="${passenger.gender}">
+                            <span th:case="'M'">男</span>
+                            <span th:case="'F'">女</span>
+
+                        </div>
+
+                        <div class="span8">
+                            <label> 证件号码：</label><span class="detail-text" th:text="${passenger.cardNum}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 证件类型:</label>
+
+                            <span class="detail-text" th:switch="${passenger.cardType}">
+                            <span th:case="'PP'">护照</span>
+                            <span th:case="'GA'">港澳通行证</span>
+                            <span th:case="'TW'">台湾通行证</span>
+                            <span th:case="'TB'">台胞证</span>
+                                <span th:case="'HX'">回乡证</span>
+                                <span th:case="'HY'">国际海员证</span>
+
+
+                        </div>
+
+                        <div class="span8">
+                            <label> 证件发行国家：</label><span class="detail-text"
+                                                         th:text="${passenger.cardIssuePlace}"></span>
+                        </div>
+
+                        <div class="span8">
+                            <label> 证件有效时间：</label><span class="detail-text" th:text="${passenger.cardExpired}"></span>
+                        </div>
+                        <div class="span8">
+                            <label> 乘客国籍：</label><span class="detail-text" th:text="${passenger.nationality}"></span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+
+    <!-- script end -->
+</div>
+</body>
+</html>

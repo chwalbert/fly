@@ -1,28 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.cloud.fly.content.data.mapper.OrderMapper">
-    <resultMap id="BaseResultMap" type="com.cloud.fly.content.data.entity.OrderEntity">
+
+	<parameterMap id="AttachmentDO" type="com.cloud.fly.content.data.entity.OrderEntity"/>
+
+	<resultMap id="BaseResultMap" type="com.cloud.fly.content.data.entity.OrderEntity">
         <result column="id" property="id"/>
-        <result column="session_id" property="sessionId"/>
-        <result column="order_info" property="orderInfo"/>
+		<result column="user_name" property="userName"/>
+		<result column="session_id" property="sessionId"/>
+		<result column="data_id" property="dataId"/>
+		<result column="order_json" property="orderJson"/>
+        <result column="routing_json" property="routingJson"/>
+		<result column="trip_type" property="tripType"/>
+		<result column="status" property="status"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+	</resultMap>
 
-        <result column="routing" property="routing"/>
-
-    </resultMap>
-
-    <sql id="Base_Column_List">
-		id,session_id,order_info,routing
-
-	</sql>
 
     <insert id="insert" parameterType="com.cloud.fly.content.data.entity.OrderEntity" useGeneratedKeys="true"
             keyProperty="id">
 		INSERT INTO air_order (
-			 session_id,order_info,routing
+			 user_name,session_id,data_id,order_json,routing_json,trip_type,status,create_time
 		)
 		VALUES (
-			#{name}
+			#{userName},#{sessionId},#{dataId},#{orderJson},#{routingJson},#{tripType},#{status},now()
 		)
 	</insert>
+
+
+	<select id="selectAll" resultMap="BaseResultMap">
+		select * from air_order
+	</select>
+
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		SELECT * FROM air_order WHERE id = #{id}
+	</select>
+
+	<update id="updateById" parameterMap="OrderEntity">
+		update air_order set
+		status =#{status},
+		update_time = now()
+		where id = #{id}
+	</update>
+	
 
 </mapper>

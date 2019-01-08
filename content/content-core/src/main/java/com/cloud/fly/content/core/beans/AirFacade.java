@@ -1,20 +1,22 @@
 package com.cloud.fly.content.core.beans;
 
+import com.cloud.fly.content.core.constant.Status;
+import com.cloud.fly.content.core.constant.TripType;
 import com.cloud.fly.content.core.model.AirContext;
+import com.cloud.fly.content.core.model.AirFlight;
 import com.cloud.fly.content.core.model.AirInfo;
-import com.cloud.fly.content.core.model.AirResponse;
 import com.cloud.fly.content.core.model.FlightSegment;
-import com.cloud.fly.content.core.model.order.Order;
+import com.cloud.fly.content.core.model.order.OrderRequest;
 import com.cloud.fly.content.core.model.order.OrderResponse;
 import com.cloud.fly.content.core.model.search.BaggageInfoElement;
 import com.cloud.fly.content.core.model.search.ChangeInfoElement;
 import com.cloud.fly.content.core.model.search.RefundInfoElement;
 import com.cloud.fly.content.core.model.search.RoutingElement;
 import com.cloud.fly.content.core.model.search.RuleElement;
-import com.cloud.fly.content.core.model.search.Search;
+import com.cloud.fly.content.core.model.search.SearchRequest;
 import com.cloud.fly.content.core.model.search.SearchResponse;
 import com.cloud.fly.content.core.model.search.SegmentElement;
-import com.cloud.fly.content.core.model.verify.Verify;
+import com.cloud.fly.content.core.model.verify.VerifyRequest;
 import com.cloud.fly.content.core.model.verify.VerifyResponse;
 import com.cloud.fly.content.core.util.JsonUtil;
 import com.cloud.fly.content.data.entity.OrderEntity;
@@ -55,17 +57,17 @@ public class AirFacade {
     private static Map<String, String> SESSION_ID_MAP = new HashMap<>();
 
 
-    public SearchResponse search(Search search) {
-        log.info("search param:", JsonUtil.toJson(search));
+    public SearchResponse search(SearchRequest searchRequest) {
+        log.info("search param:", JsonUtil.toJson(searchRequest));
 
         AirContext context = new AirContext();
-        context.setTripType(search.getTripType());
+        context.setTripType(searchRequest.getTripType());
 
-        context.setDepCode(search.getFromCity());
-        context.setArrCode(search.getToCity());
+        context.setDepCode(searchRequest.getFromCity());
+        context.setArrCode(searchRequest.getToCity());
 
-        context.setDepDate(search.getFromDate());
-        context.setReturnDate(search.getRetDate());
+        context.setDepDate(searchRequest.getFromDate());
+        context.setReturnDate(searchRequest.getRetDate());
 
 
         //返回
@@ -75,11 +77,11 @@ public class AirFacade {
 
             //数据爬虫
             String html = asiaService.collectorFlight(context);
-            AirResponse response = asiaService.parseFlight(html);
+            AirInfo response = asiaService.parseFlight(html);
 
             log.info("airResponse:" + JsonUtil.toJson(response));
 
-            boolean result = checkAirResponse(search, response);
+            boolean result = checkAirResponse(searchRequest, response);
             if (!result) {
                 searchResponse.setStatus("D100");
                 searchResponse.setMsg("no flight");
@@ -89,7 +91,7 @@ public class AirFacade {
             //数据构建
             List<RoutingElement> routings = new ArrayList<>();
             for (int i = 0; i < response.getFromSegments().size(); i++) {
-                AirInfo airInfo = response.getFromSegments().get(i);
+                AirFlight airInfo = response.getFromSegments().get(i);
                 RoutingElement routingElement = new RoutingElement();
                 routingElement.setData(System.currentTimeMillis() + "_" + UUID.randomUUID().toString());
                 routingElement.setPublishPrice(0);
@@ -168,7 +170,7 @@ public class AirFacade {
     }
 
 
-    public VerifyResponse verify(Verify verify) {
+    public VerifyResponse verify(VerifyRequest verify) {
         VerifyResponse response = new VerifyResponse();
         response.setSessionId(UUID.randomUUID().toString());
         if (!ROUTING_DATA_MAP.containsKey(verify.getRouting().getData())) {
@@ -187,15 +189,23 @@ public class AirFacade {
         return response;
     }
 
-    public OrderResponse order(Order order) {
+    public OrderResponse order(OrderRequest order) {
         OrderResponse response = new OrderResponse();
-        if (!SESSION_ID_MAP.containsKey(order.getSessionId())) {
+        if (!SESSION_ID_MAP.containsKey(order.getSessionId())
+                || !ROUTING_DATA_MAP.containsKey(order.getRouting().getData())) {
             response.setStatus("C100");
             response.setMsg("舱位已售完");
             return response;
         }
 
         String data = SESSION_ID_MAP.get(order.getSessionId());
+
+        if (!data.equals(order.getRouting().getData())) {
+            response.setStatus("C100");
+            response.setMsg("舱位已售完");
+            return response;
+        }
+
 
         RoutingElement element = ROUTING_DATA_MAP.get(data);
 
@@ -207,9 +217,13 @@ public class AirFacade {
         response.setStatus("C0"); //C0 成功
 
         OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setUserName(order.getUserName());
         orderEntity.setSessionId(order.getSessionId());
-        orderEntity.setOrderInfo(JsonUtil.toJson(order));
-        orderEntity.setRouting(JsonUtil.toJson(element));
+        orderEntity.setDataId(order.getRouting().getData());
+        orderEntity.setOrderJson(JsonUtil.toJson(order));
+        orderEntity.setRoutingJson(JsonUtil.toJson(element));
+        orderEntity.setTripType(TripType.get(order.getTripType()));
+        orderEntity.setStatus(Status.pending);
         mapper.insert(orderEntity);
         return response;
     }
@@ -234,7 +248,7 @@ public class AirFacade {
         return fromSegments;
     }
 
-    private boolean checkAirResponse(Search search, AirResponse response) {
+    private boolean checkAirResponse(SearchRequest search, AirInfo response) {
 
         if (search == null || response == null) {
             return false;
@@ -243,10 +257,10 @@ public class AirFacade {
         //行程类型， 1:单程; 2:往返;行程类型， 1:单程; 2:往返;
         switch (search.getTripType()) {
             case "1":
+                return !CollectionUtils.isEmpty(response.getFromSegments());
+            case "2":
                 return (!CollectionUtils.isEmpty(response.getFromSegments())
                         && !CollectionUtils.isEmpty(response.getRetSegments()));
-            case "2":
-                return !CollectionUtils.isEmpty(response.getFromSegments());
             default:
                 return false;
         }
@@ -254,4 +268,39 @@ public class AirFacade {
     }
 
 
+    public Object orderAll() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", mapper.selectAll());
+        return map;
+    }
+
+    public Object orderDetail(Long id) {
+        Map<String, Object> map = new HashMap<>();
+        OrderEntity orderEntity = mapper.findById(id);
+
+        OrderRequest order = JsonUtil.toObject(orderEntity.getOrderJson(), OrderRequest.class);
+        RoutingElement routingElement = JsonUtil.toObject(orderEntity.getRoutingJson(), RoutingElement.class);
+
+        map.put("orderEntity", orderEntity);
+        map.put("order", order);
+        map.put("routingElement", routingElement);
+
+        return map;
+    }
+
+    public Object updateOrderStatus(Long id, Status oldStatus, Status updateStatus) {
+        if (oldStatus == updateStatus) {
+            return null;
+        }
+        OrderEntity orderEntity = mapper.findById(id);
+        if (orderEntity == null || orderEntity.getStatus() != oldStatus) {
+            return null;
+        }
+        OrderEntity entity = new OrderEntity();
+        entity.setId(id);
+        entity.setStatus(updateStatus);
+
+        mapper.updateById(entity);
+        return null;
+    }
 }
