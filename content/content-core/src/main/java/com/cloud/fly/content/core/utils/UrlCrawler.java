@@ -91,5 +91,9 @@ public class UrlCrawler {
         Document document = data.get();
         return document.html();
     }
+    public static  void main(String[] agr) throws Exception {
+
+        String url="https://www.airasia.com/booking/select/zh/cn/KUA/AOR/2019-01-15/2019-01-18/1/0/0/R/N/CNY/SC";
+    }
 
 }

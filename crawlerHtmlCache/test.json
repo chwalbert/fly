@@ -1,14 +1,13 @@
-//https://booking.airasia.com/Flight/Select?o1=AKL&d1=BDO&dd1=2019-01-26&dd2=2019-01-28&r=true&ADT=1&CHD=0&inl=0&s=false&mon=true&cc=CNY
-
+https://booking.airasia.com/Flight/Select?o1=AKL&d1=BDO&dd1=2019-01-25&ADT=1&CHD=2&inl=0&s=false&mon=true&cc=CNY
 {
-  "adultNum": 0,
+  "adultNum": 1,
   "cabinGrade": [
     "string"
   ],
   "childNum": 0,
   "fromCity": "AKL",
-  "fromDate": "2019-01-26",
-  "retDate": "2019-01-28",
+  "fromDate": "2019-01-25",
+  "retDate": "2019-01-25",
   "toCity": "BDO",
   "tripType": "1",
   "userName": "string"

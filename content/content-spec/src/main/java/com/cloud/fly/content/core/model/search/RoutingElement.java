@@ -1,5 +1,6 @@
 package com.cloud.fly.content.core.model.search;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -112,7 +113,7 @@ public class RoutingElement {
     private Integer maxPassengerCount;
 
 
-    private  Integer productCode;
+    private Integer productCode;
     /**
      * yes运价类型:
      * 0: GDS 公布运价 1:GDS 私有运价 2:航司官网产品 3:廉价航司产品 4:特价产品
@@ -124,10 +125,10 @@ public class RoutingElement {
     private RuleElement rule;
 
     // 去程航段按顺序返回，数据结构参考下 面的 Segment Element ;如果为多程第一 程、第二程的信息，全输出到此节点。
-    private List<SegmentElement> fromSegments;
+    private List<SegmentElement> fromSegments = new ArrayList<>();
 
     //回程航段按顺序返回，数据结构参考下 面的 Segment Element ;如果为多程第一 程、第二程的信息，全输出到此节点。(单 程搜索为空)
-    private List<SegmentElement> retSegments;
+    private List<SegmentElement> retSegments = new ArrayList<>();
 
 
     public String getData() {

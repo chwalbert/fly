@@ -21,7 +21,6 @@ import com.cloud.fly.content.core.model.verify.VerifyResponse;
 import com.cloud.fly.content.core.util.JsonUtil;
 import com.cloud.fly.content.data.entity.OrderEntity;
 import com.cloud.fly.content.data.mapper.OrderMapper;
-import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -91,14 +92,11 @@ public class AirFacade {
             //数据构建
             List<RoutingElement> routings = new ArrayList<>();
             for (int i = 0; i < response.getFromSegments().size(); i++) {
-                AirFlight airInfo = response.getFromSegments().get(i);
-                RoutingElement routingElement = new RoutingElement();
-                routingElement.setData(System.currentTimeMillis() + "_" + UUID.randomUUID().toString());
-                routingElement.setPublishPrice(0);
-                routingElement.setChildPublishPrice(0);
-                routingElement.setAdultTax(0);
-                routingElement.setChildTax(0);
 
+
+                RoutingElement routingElement = new RoutingElement();
+
+                AirFlight airInfo = response.getFromSegments().get(i);
                 if (airInfo.getLow() != null && StringUtils.hasText(airInfo.getLow().getAdultPrice())) {
                     routingElement.setAdultPrice((int) Math.ceil(new Double(airInfo.getLow().getAdultPrice())));
                 }
@@ -106,6 +104,39 @@ public class AirFacade {
                 if (airInfo.getLow() != null && StringUtils.hasText(airInfo.getLow().getChildPrice())) {
                     routingElement.setChildPrice((int) Math.ceil(new Double(airInfo.getLow().getChildPrice())));
                 }
+
+                List<SegmentElement> fromSegments = getSegmentElements(context.getDepDate(), airInfo.getSegments());
+                routingElement.setFromSegments(fromSegments);
+
+                /****** 1:单程2:往返;***/
+                if (searchRequest.getTripType().equals("2")) {
+
+                    AirFlight retAirFlight;
+                    if (response.getRetSegments().size() < i) {
+                        retAirFlight = response.getRetSegments().get(i);
+                    } else {
+                        retAirFlight = response.getRetSegments().get(response.getRetSegments().size() - 1);
+                    }
+
+
+                    if (retAirFlight.getLow() != null && StringUtils.hasText(retAirFlight.getLow().getAdultPrice())) {
+                        routingElement.setAdultPrice(routingElement.getAdultPrice() + (int) Math.ceil(new Double(retAirFlight.getLow().getAdultPrice())));
+                    }
+
+                    if (retAirFlight.getLow() != null && StringUtils.hasText(retAirFlight.getLow().getChildPrice())) {
+                        routingElement.setChildPrice(routingElement.getChildPrice() + (int) Math.ceil(new Double(retAirFlight.getLow().getChildPrice())));
+                    }
+                    List<SegmentElement> retSegments = getSegmentElements(context.getReturnDate(), retAirFlight.getSegments());
+                    routingElement.setRetSegments(retSegments);
+                }
+
+
+                routingElement.setData(System.currentTimeMillis() + "_" + UUID.randomUUID().toString());
+                routingElement.setPublishPrice(0);
+                routingElement.setChildPublishPrice(0);
+                routingElement.setAdultTax(0);
+                routingElement.setChildTax(0);
+
 
                 routingElement.setCurrency("CNY");
                 routingElement.setNationalityType(0);
@@ -148,9 +179,6 @@ public class AirFacade {
                 ruleElement.setBaggageInfo(baggageInfoElement);
                 routingElement.setRule(ruleElement);
 
-
-                List<SegmentElement> fromSegments = getSegmentElements(airInfo.getSegments());
-                routingElement.setFromSegments(fromSegments);
 
                 routings.add(routingElement);
 
@@ -228,22 +256,37 @@ public class AirFacade {
         return response;
     }
 
-    private List<SegmentElement> getSegmentElements(List<FlightSegment> flightSegmentList) {
+    private List<SegmentElement> getSegmentElements(String date, List<FlightSegment> flightSegmentList) {
         //去程航段按顺序返回，
+
+
         List<SegmentElement> fromSegments = new ArrayList<>();
         for (FlightSegment flightSegment : flightSegmentList) {
             SegmentElement segmentElement = new SegmentElement();
             segmentElement.setCarrier("AXM");
             segmentElement.setFlightNumber(flightSegment.getFlightNumber());
             segmentElement.setDepAirport(flightSegment.getDepAirport());
-            segmentElement.setDepTime(DateUtils.formatDate(new Date(), "yyyyMMdd") + flightSegment.getArrTime().replaceAll(":", ""));
 
+            if (flightSegment.getDepDay() != null
+                    && flightSegment.getDepDay() > 0) {
+                date = addDay(date, flightSegment.getDepDay());
+            }
+            segmentElement.setDepTime(date + flightSegment.getDepTime().replaceAll(":", ""));
+
+
+            segmentElement.setArrTime(date + flightSegment.getArrTime().replaceAll(":", ""));
             segmentElement.setArrAirport(flightSegment.getArrAirport());
-            segmentElement.setArrTime(DateUtils.formatDate(new Date(), "yyyyMMdd") + flightSegment.getArrTime().replaceAll("", ":"));
+            if (flightSegment.getArrDay() != null &&
+                    flightSegment.getArrDay() > 0) {
+                date = addDay(date, flightSegment.getArrDay());
+            }
+
             segmentElement.setCodeShare(false);
             segmentElement.setCabin("9");
             segmentElement.setCabinCount(9);
             segmentElement.setCabinGrade("Y");
+
+            fromSegments.add(segmentElement);
         }
         return fromSegments;
     }
@@ -302,5 +345,26 @@ public class AirFacade {
 
         mapper.updateById(entity);
         return null;
+    }
+
+    public static String addDay(String date, int day) {
+
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+            Date dt = sdf.parse(date);
+            Calendar rightNow = Calendar.getInstance();
+            rightNow.setTime(dt);
+            rightNow.add(Calendar.YEAR, day);
+
+            Date dt1 = rightNow.getTime();
+            String reStr = sdf.format(dt1);
+            return reStr;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return date;
     }
 }

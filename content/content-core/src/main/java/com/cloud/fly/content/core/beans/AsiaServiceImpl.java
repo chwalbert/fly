@@ -18,7 +18,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,11 +49,11 @@ public class AsiaServiceImpl implements AirService {
         String url;
         if ("1".equals(context.getTripType())) {
             MessageFormat mf = new MessageFormat(one_way);
-            url = mf.format(one_way, context.getDepCode(), context.getArrCode(), context.getDepDate());
+            url = mf.format(one_way, context.getDepCode(), context.getArrCode(), toDate(context.getDepDate()));
 
         } else {
             MessageFormat mf = new MessageFormat(return_);
-            url = mf.format(return_, context.getDepCode(), context.getArrCode(), context.getDepDate(), context.getReturnDate());
+            url = mf.format(return_, context.getDepCode(), context.getArrCode(), toDate(context.getDepDate()), toDate(context.getReturnDate()));
         }
         try {
             String html = UrlCrawler.getHtml(url, true);
@@ -333,6 +335,23 @@ public class AsiaServiceImpl implements AirService {
         Matcher m = p.matcher(htmlStr);
         String dest = m.replaceAll("");
         return dest;
+    }
+
+    private static String toDate(String date) {
+
+        try {
+            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
+            Date date1 = sdf1.parse(date);
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+            String date2 = sdf2.format(date1);
+            return date2;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return date;
+
+
     }
 
 }
